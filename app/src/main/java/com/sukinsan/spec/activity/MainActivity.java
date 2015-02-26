@@ -1,4 +1,4 @@
-package com.sukinsan.spec.spec;
+package com.sukinsan.spec.activity;
 
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -8,11 +8,14 @@ import android.text.format.Formatter;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
+import com.sukinsan.spec.spec.R;
+import com.sukinsan.spec.utils.Utils;
 
-public class MainActivity extends ActionBarActivity {
 
+public class MainActivity extends ActionBarActivity implements View.OnClickListener{
     private TextView txtIpAddress;
     private TextView drawablePath;
 
@@ -23,6 +26,9 @@ public class MainActivity extends ActionBarActivity {
 
         txtIpAddress = (TextView)findViewById(R.id.txt_ip_address);
         drawablePath = (TextView)findViewById(R.id.txt_drawable_path);
+
+        findViewById(R.id.btn_start_adb).setOnClickListener(this);
+        findViewById(R.id.btn_stop_adb).setOnClickListener(this);
     }
 
     @Override
@@ -81,5 +87,31 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.btn_start_adb:
+                if(Utils.executeCmd("setprop service.adb.tcp.port 5555") &&
+                   Utils.executeCmd("stop adbd") &&
+                   Utils.executeCmd("start adbd")
+                ){
+                   Utils.toast(this,"Success");
+                }else{
+                    Utils.toast(this,"Failed");
+                }
+                break;
+            case R.id.btn_stop_adb:
+                if(Utils.executeCmd("setprop service.adb.tcp.port -1") &&
+                    Utils.executeCmd("stop adbd") &&
+                    Utils.executeCmd("start adbd")
+                ){
+                    Utils.toast(this,"Success");
+                }else{
+                    Utils.toast(this,"Failed");
+                }
+                break;
+        }
     }
 }
